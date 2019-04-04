@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+  <html lang="en">
+  <head></head>
+  <body>
+    <canvas width="640" height="40" id="canvas"></canvas>
+    <style>
+    html,body{
+      height: 100%;
+      margin: 0;
+    }
+    body{
+      display: flex;
+      justify-content:center;
+      align-items:center;
+    }
+    canvas{
+    width: 640px;
+    height: 40px;
+    /*background: #3c3c3c;*/
+    background: white;
+    }
+    </style>
+    <script>
+      window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
+      var AudioContext = window.AudioContext || window.webkitAudioContext;
+      var audioCtx;
+      var source;
+      var Animationst;
+      try {
+        audioCtx = new AudioContext();
+      } catch (e) {
+        alert('Your browser does not support AudioContext!');
+        console.log(e);
+      }
+      var getData = function() {
+        source = audioCtx.createBufferSource();
+        // 请求
+        var request = new XMLHttpRequest();
+        //初始化 HTTP 请求参数, 配置请求类型，文件路径等
+        request.open('GET', 'mp3/i2.mp3', true);
+        // 配置数据返回类型,从服务器取回二进制数据
+        request.responseType = 'arraybuffer';
+        // 获取完成，对音频进一步操作，解码
+        request.onload = function() {
+          var audioData = request.response;
+          audioCtx.decodeAudioData(audioData, function(buffer) {
+          source.buffer = buffer;
+          // console.log(source.buffer.duration)
+          window.audioDuration = source.buffer.duration; //音乐总时长
+          source.connect(audioCtx.destination);
+        },
+        function(e) { console.log("Error with decoding audio data" + e.err); });
+        };
+
+        // 发送一个 HTTP 请求
+        request.send();
+        //创建分析器
+        var analyser = audioCtx.createAnalyser();
+        source = audioCtx.createBufferSource();
+        // analyser.minDecibels = -90;
+        // analyser.maxDecibels = -10;
+        analyser.fftSize = 32;
+
+
+        console.info(source,analyser)
+        //将source与分析器链接
+        source.connect(analyser);
+        //将分析器与destination链接，这样才能形成到达扬声器的通路
+        analyser.connect(audioCtx.destination);
+
+        // console.info(source,audioCtx.destination)
+
+
+        //开始绘制频谱图
+        var canvas = document.getElementById('canvas'),
+        cheight = canvas.height,
+        meterNum = 320,
+        step = 1,
+        capYPositionArray = [];
+        var ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#f55';
+        function drawSpectrum() {
+          var array = new Uint8Array(analyser.frequencyBinCount);
+          analyser.getByteFrequencyData(array);
+          // console.info(window.audioDuration/meterNum*step,audioCtx.currentTime);
+          
+          if (window.audioDuration / meterNum * step < audioCtx.currentTime) {
+            step++;
+            // console.log('第' + (step-1) + '步');
+            // console.info(window.audioDuration/meterNum*step,audioCtx.currentTime);
+            // console.log(array);
+            var value = array[array.length/2] / 255 * cheight;
+            // var value = array[0];
+            ctx.fillRect(2 * step, cheight - value, 1, cheight);  
+            capYPositionArray.push(value);
+            console.log(capYPositionArray);
+          }
+
+          Animationst = window.requestAnimationFrame(drawSpectrum);
+
+          if (audioCtx.currentTime > window.audioDuration) {
+            cancelAnimationFrame(Animationst);
+          }
+        }
+        Animationst = window.requestAnimationFrame(drawSpectrum);
+      };
+
+      getData();
+      source.start(0);
+      // source.stop();
+    </script>
+
+  </body>
+</html>  

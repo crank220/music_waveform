@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+  <html lang="en">
+  <head></head>
+  <body>
+    <canvas id="motion"></canvas>
+    <style>
+      * {margin: 0;padding: 0;}
+      body {overflow: hidden;}
+    </style>
+    <script>
+      if (!Date.now)
+        Date.now = function() { return new Date().getTime(); };
+      (function() {
+          'use strict';
+          var vendors = ['webkit', 'moz'];
+          for (var i = 0; i < vendors.length && !window.requestAnimationFrame; ++i) {
+              var vp = vendors[i];
+              window.requestAnimationFrame = window[vp+'RequestAnimationFrame'];
+              window.cancelAnimationFrame = (window[vp+'CancelAnimationFrame']
+                                         || window[vp+'CancelRequestAnimationFrame']);
+          }
+          if (/iP(ad|hone|od).*OS 6/.test(window.navigator.userAgent) // iOS6 is buggy
+              || !window.requestAnimationFrame || !window.cancelAnimationFrame) {
+              var lastTime = 0;
+              window.requestAnimationFrame = function(callback) {
+                  var now = Date.now();
+                  var nextTime = Math.max(lastTime + 16, now);
+                  return setTimeout(function() { callback(lastTime = nextTime); },
+                                    nextTime - now);
+              };
+              window.cancelAnimationFrame = clearTimeout;
+          }
+      }());
+
+      var getRandomColor = function(){
+        return '#'+(Math.random()*0xffffff<<0).toString(16);
+      }
+
+      var canvas = document.getElementById("motion"), 
+          c = canvas.getContext("2d"),
+          particles = {},
+          particleIndex = 0,
+          particleNum = 0.2;
+
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      function Particle(){
+        this.x = canvas.width/2;
+        this.y = canvas.height/2;
+
+        this.vx = Math.random() * 6 - 3;
+        this.vy = Math.random() * 4 - 2;
+
+        this.growth = ( Math.abs(this.vx) + Math.abs(this.vy) ) * 0.007;
+
+        particleIndex++;
+        particles[particleIndex] = this;
+        this.id = particleIndex;
+        this.size = Math.random() * 1;
+        this.color = getRandomColor();
+      }
+
+      Particle.prototype.draw = function(){
+        this.x += this.vx;
+        this.y += this.vy;
+
+        this.size += this.growth;
+        if(this.x > canvas.width || this.y > canvas.height){
+          delete particles[this.id];
+        }
+
+        c.fillStyle = this.color;
+        c.beginPath();
+        c.arc(this.x, this.y, this.size,0*Math.PI,2*Math.PI);
+        c.fill();
+      };
+
+      function animate(){
+        requestAnimationFrame( animate );
+        
+        c.fillStyle = "#000";
+        c.fillRect(0,0,canvas.width,canvas.height);
+        if(Math.random() > particleNum){
+          new Particle();
+        }
+        for(var i in particles){
+          particles[i].draw();
+        }
+      }
+      requestAnimationFrame( animate );
+    </script>
+  </body>
+</html>  

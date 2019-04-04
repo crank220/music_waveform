@@ -1,0 +1,43 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+</head>
+<body>
+<style>
+
+</style>
+<script src="https://cdn.bootcss.com/jquery/1.10.2/jquery.min.js"></script>
+<script>
+window.AudioContext = window.AudioContext || window.webkitAudioContext || window.mozAudioContext || window.msAudioContext;
+var audioCtx = new AudioContext();
+// var source;
+try {
+audioCtx = new AudioContext();
+console.log('support');
+} catch (e) {
+alert('Your browser does not support AudioContext!');
+console.log(e);
+}
+source = audioCtx.createBufferSource();
+console.log (source);
+var request = new XMLHttpRequest();
+//初始化 HTTP 请求参数, 配置请求类型，文件路径等
+request.open('GET', 'mp3/i1.mp3', true);
+// 配置数据返回类型,从服务器取回二进制数据
+request.responseType = 'arraybuffer';
+// 获取完成，对音频进一步操作，解码
+request.onload = function() {
+var audioData = request.response;
+audioCtx.decodeAudioData(audioData, function(buffer) {
+source.buffer = buffer;
+console.log(buffer);
+},
+function(e) { console.log("Error with decoding audio data" + e.err); });
+};
+</script>
+
+</body>
+
+</html>

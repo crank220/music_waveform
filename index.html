@@ -1,0 +1,45 @@
+< html  ng-app = “ mdWavesurferApp ” >
+< head >
+    < title > wavesurfer.js | Angular Material </ title >
+    < meta  http-equiv = “ content-type ”  content = “ text / html; charset = UTF-8 ” >
+    < meta  name = “ viewport ”  content = “ width = device-width，initial-scale = 1 ” >
+    < 链路 HREF = ' http://fonts.googleapis.com/css?family=Roboto:400,500 ' 相对 = '样式表' 类型 = '文本/ CSS ' >
+    < link  href = ' https://cdnjs.cloudflare.com/ajax/libs/material-design-iconic-font/2.2.0/css/material-design-iconic-font.min.css '
+          相对 = '样式表' 类型 = '文本/ CSS ' >
+    < link  href = “ https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/styles/github.min.css ”  rel = “ stylesheet ” >
+    < link  href = “ https://cdnjs.cloudflare.com/ajax/libs/angular-material/1.0.0-rc3/angular-material.min.css ”
+          rel = “ stylesheet ”  type = “ text / css ” />
+
+    < link  rel = “ stylesheet ”  href = “ main.css ” />
+    < script  src = “ https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.7/angular.min.js ” > < / script >
+    < script  src = “ https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.7/angular-animate.min.js ” > < / script >
+    < script  src = “ https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.7/angular-aria.min.js ” > < / script >
+    < script  src = “ https://cdnjs.cloudflare.com/ajax/libs/angular-material/1.0.0-rc3/angular-material.min.js ” > < / script >
+    < script  type = “ text / javascript ”  src = “ ../../dist / wavesurfer.min.js ” > < / script >
+    < script  type = “ text / javascript ”  src = “ wavesururfer.directive.js ” > < / script >
+    < script  type = “ text / javascript ”  src = “ main.js ” > < / script >
+
+</ head >
+< body  ng-controller = “ MainController ” >
+  < md-waveurfer-audio  player-wave-color = “ gray ”  player-progress-color = “ black ”
+                       player-backend = “ MediaElement ” >
+    <！ -这与HTML <source>元素- >类似
+    < md-wavesurur-source  src = “ ../media/demo.wav ”  title = “教父主题曲” > </ md-wavesurur-source >
+    < md-waveurfer-source  src = “ ../panner/media.wav ”  title = “日本人の话し” > </ md-wavesurur-source >
+    < md-wavesurur-source  src = “ ../elan/transcripts/001z.mp3 ”
+                          title = “ Рассказыосновидениях ” > </ md-wavesurur-source >
+    <！ - <md-wavesurur-source - >
+    <！ -     src =“http://download.wavetlan.com/SVV/Media/HTTP/MP3/Nero_SmartTrax/NeroSmartTrax_test1_MPEG2_Stereo_CBR_48kbps_22050Hz.mp3” - >
+    <！ -     title =“远程：Nero SmartTrax  - 测试1”> </ md-wavesurur-source> - >
+    <！ - <md-wavesurur-source - >
+    <！ -     src =“http://download.wavetlan.com/SVV/Media/HTTP/MP3/Nero_SmartTrax/NeroSmartTrax_test2_MPEG1_Mono_CBR_64kbps_44100Hz.mp3” - >
+    <！ -     title =“远程：Nero SmartTrax  - 测试2”> </ md-wavesurur-source> - >
+
+    <！ -长列表，使用以前加载的文件，需要测试容器。- >
+    < md-waveurfer-source  ng-repeat = “ item in longList ”  src = “ {{item.url}} ”
+                          title = “ {{item.title}} ” > </ md-wavesur-source >
+
+
+  </ md-wavesur音频 >
+</ body >
+</ html >

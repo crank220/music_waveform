@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+  <html lang="en">
+  <title>波形图-分析器频率</title>
+  <head></head>
+  <body>
+    <canvas width="640" height="40" id="canvas"></canvas>
+    <canvas width="640" height="20" id="canvasi"></canvas>
+    <style>
+    html,body{
+      height: 100%;
+      margin: 0;
+    }
+    body{
+      display: flex;
+      justify-content:center;
+      align-items:center;
+    }
+    canvas{
+    /*width: 640px;*/
+    height: 40px;
+    background: white;
+    }
+    #canvasi{
+      display: none;
+      height: 20px !important;
+    }
+    </style>
+    <script>
+      var musicsDatas = [0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.0059,0.0686,0.2255,0.0216,0.0412,0.0294,0.0961,0.0176,0.0176,0.0059,0.0255,0.0412,0.0451,0.0137,0.1196,0.0216,0.0098,0.0333,0.0098,0.0098,0.0098,0.0647,0.0451,0.1941,0.0059,0.0059,0.0216,0.002,0.0294,0.0098,0.151,0.0059,0.002,0.0373,0.0529,0.1941,0.0098,0.0255,0.151,0.2098,0.0608,0.0725,0.049,0.0725,0.0569,0.0294,0.0216,0.0294,0.202,0.1,0.0608,0.0137,0.0373,0.002,0.0176,0.0686,0.1275,0.049,0.0569,0.0294,0.0098,0.0059,0.002,0.1431,0.1353,0.1667,0.1275,0.0922,0.0843,0.0333,0.049,0.0922,0.0725,0.049,0.0569,0.0569,0.0098,0.1353,0.0098,0.049,0.0059,0.0451,0.0843,0.0569,0.1275,0.0059,0.0412,0.0686,0.1588,0.0922,0.0098,0.0176,0.0765,0.002,0.0098,0.0451,0.2373,0.0333,0.0333,0.002,0.0059,0.1353,0.0176,0.0059,0.0373,0.049,0.1157,0.1353,0.049,0.1353,0.1196,0.0255,0.0059,0.0843,0.0294,0.0176,0.0412,0.0373,0.0529,0.049,0.0137,0.0373,0.0686,0.0255,0.0098,0.0373,0.049,0.1039,0.0373,0.0373,0.0098,0.0059,0.002,0.0137,0.0765,0.1,0.202,0.1353,0.0686,0.1039,0.0137,0.0255,0.1471,0.1078,0.002,0.0529,0.1235,0.0569,0.0843,0.0255,0.0647,0.1,0.049,0.0373,0.0216,0.0333,0.0137,0.0294,0.0098,0.0216,0.0294,0.002,0.0098,0.0176,0.0333,0.0098,0.002,0.0098,0.0137,0.0059,0.002,0.0059,0.002,0.002,0.002,0.002,0.002,0.0059,0.002,0.0059,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002];
+      var canvas = document.querySelector('#canvas');
+      var context = canvas.getContext('2d');
+      // canvas.width = musicsDatas.length;
+      var canvasHeight = canvas.height;
+      context.fillStyle = 'rgba(245, 95, 85, 1)';
+      // var canvasi = document.querySelector('#canvasi');
+      // var contexti = canvasi.getContext('2d');
+      // canvasi.width = canvasi.width;
+      // var canvasiHeight = canvasi.height;
+      // contexti.fillStyle = 'rgba(245, 95, 85,.5)';
+      var capYPositionArray = musicsDatas;
+      console.info(canvasHeight, capYPositionArray.length);
+      for (var b = 0; b < capYPositionArray.length; b++) {
+        context.fillRect(3 * b, canvasHeight - (capYPositionArray[b] / 0.2373 * canvasHeight), 2.2, capYPositionArray[b] / 0.2373 * canvasHeight);
+        // console.log(canvasHeight - (capYPositionArray[b] * canvasHeight * 10));
+        // contexti.fillRect(3 * b, 1, 2.2, capYPositionArray[b] * canvasiHeight);
+      }
+    </script>
+
+  </body>
+</html>
