@@ -1,45 +1,50 @@
-< html  ng-app = “ mdWavesurferApp ” >
-< head >
-    < title > wavesurfer.js | Angular Material </ title >
-    < meta  http-equiv = “ content-type ”  content = “ text / html; charset = UTF-8 ” >
-    < meta  name = “ viewport ”  content = “ width = device-width，initial-scale = 1 ” >
-    < 链路 HREF = ' http://fonts.googleapis.com/css?family=Roboto:400,500 ' 相对 = '样式表' 类型 = '文本/ CSS ' >
-    < link  href = ' https://cdnjs.cloudflare.com/ajax/libs/material-design-iconic-font/2.2.0/css/material-design-iconic-font.min.css '
-          相对 = '样式表' 类型 = '文本/ CSS ' >
-    < link  href = “ https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/styles/github.min.css ”  rel = “ stylesheet ” >
-    < link  href = “ https://cdnjs.cloudflare.com/ajax/libs/angular-material/1.0.0-rc3/angular-material.min.css ”
-          rel = “ stylesheet ”  type = “ text / css ” />
+<!DOCTYPE html>
+  <html lang="en">
+  <title>波形图-分析器频率</title>
+  <head></head>
+  <body>
+    <canvas width="640" height="40" id="canvas"></canvas>
+    <canvas width="640" height="20" id="canvasi"></canvas>
+    <style>
+    html,body{
+      height: 100%;
+      margin: 0;
+    }
+    body{
+      display: flex;
+      justify-content:center;
+      align-items:center;
+    }
+    canvas{
+    /*width: 640px;*/
+    height: 40px;
+    background: white;
+    }
+    #canvasi{
+      display: none;
+      height: 20px !important;
+    }
+    </style>
+    <script>
+      var musicsDatas = [0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.0059,0.0686,0.2255,0.0216,0.0412,0.0294,0.0961,0.0176,0.0176,0.0059,0.0255,0.0412,0.0451,0.0137,0.1196,0.0216,0.0098,0.0333,0.0098,0.0098,0.0098,0.0647,0.0451,0.1941,0.0059,0.0059,0.0216,0.002,0.0294,0.0098,0.151,0.0059,0.002,0.0373,0.0529,0.1941,0.0098,0.0255,0.151,0.2098,0.0608,0.0725,0.049,0.0725,0.0569,0.0294,0.0216,0.0294,0.202,0.1,0.0608,0.0137,0.0373,0.002,0.0176,0.0686,0.1275,0.049,0.0569,0.0294,0.0098,0.0059,0.002,0.1431,0.1353,0.1667,0.1275,0.0922,0.0843,0.0333,0.049,0.0922,0.0725,0.049,0.0569,0.0569,0.0098,0.1353,0.0098,0.049,0.0059,0.0451,0.0843,0.0569,0.1275,0.0059,0.0412,0.0686,0.1588,0.0922,0.0098,0.0176,0.0765,0.002,0.0098,0.0451,0.2373,0.0333,0.0333,0.002,0.0059,0.1353,0.0176,0.0059,0.0373,0.049,0.1157,0.1353,0.049,0.1353,0.1196,0.0255,0.0059,0.0843,0.0294,0.0176,0.0412,0.0373,0.0529,0.049,0.0137,0.0373,0.0686,0.0255,0.0098,0.0373,0.049,0.1039,0.0373,0.0373,0.0098,0.0059,0.002,0.0137,0.0765,0.1,0.202,0.1353,0.0686,0.1039,0.0137,0.0255,0.1471,0.1078,0.002,0.0529,0.1235,0.0569,0.0843,0.0255,0.0647,0.1,0.049,0.0373,0.0216,0.0333,0.0137,0.0294,0.0098,0.0216,0.0294,0.002,0.0098,0.0176,0.0333,0.0098,0.002,0.0098,0.0137,0.0059,0.002,0.0059,0.002,0.002,0.002,0.002,0.002,0.0059,0.002,0.0059,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002];
+      var canvas = document.querySelector('#canvas');
+      var context = canvas.getContext('2d');
+      // canvas.width = musicsDatas.length;
+      var canvasHeight = canvas.height;
+      context.fillStyle = 'rgba(245, 95, 85, 1)';
+      // var canvasi = document.querySelector('#canvasi');
+      // var contexti = canvasi.getContext('2d');
+      // canvasi.width = canvasi.width;
+      // var canvasiHeight = canvasi.height;
+      // contexti.fillStyle = 'rgba(245, 95, 85,.5)';
+      var capYPositionArray = musicsDatas;
+      console.info(canvasHeight, capYPositionArray.length);
+      for (var b = 0; b < capYPositionArray.length; b++) {
+        context.fillRect(3 * b, canvasHeight - (capYPositionArray[b] / 0.2373 * canvasHeight), 2.2, capYPositionArray[b] / 0.2373 * canvasHeight);
+        // console.log(canvasHeight - (capYPositionArray[b] * canvasHeight * 10));
+        // contexti.fillRect(3 * b, 1, 2.2, capYPositionArray[b] * canvasiHeight);
+      }
+    </script>
 
-    < link  rel = “ stylesheet ”  href = “ main.css ” />
-    < script  src = “ https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.7/angular.min.js ” > < / script >
-    < script  src = “ https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.7/angular-animate.min.js ” > < / script >
-    < script  src = “ https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.7/angular-aria.min.js ” > < / script >
-    < script  src = “ https://cdnjs.cloudflare.com/ajax/libs/angular-material/1.0.0-rc3/angular-material.min.js ” > < / script >
-    < script  type = “ text / javascript ”  src = “ ../../dist / wavesurfer.min.js ” > < / script >
-    < script  type = “ text / javascript ”  src = “ wavesururfer.directive.js ” > < / script >
-    < script  type = “ text / javascript ”  src = “ main.js ” > < / script >
-
-</ head >
-< body  ng-controller = “ MainController ” >
-  < md-waveurfer-audio  player-wave-color = “ gray ”  player-progress-color = “ black ”
-                       player-backend = “ MediaElement ” >
-    <！ -这与HTML <source>元素- >类似
-    < md-wavesurur-source  src = “ ../media/demo.wav ”  title = “教父主题曲” > </ md-wavesurur-source >
-    < md-waveurfer-source  src = “ ../panner/media.wav ”  title = “日本人の话し” > </ md-wavesurur-source >
-    < md-wavesurur-source  src = “ ../elan/transcripts/001z.mp3 ”
-                          title = “ Рассказыосновидениях ” > </ md-wavesurur-source >
-    <！ - <md-wavesurur-source - >
-    <！ -     src =“http://download.wavetlan.com/SVV/Media/HTTP/MP3/Nero_SmartTrax/NeroSmartTrax_test1_MPEG2_Stereo_CBR_48kbps_22050Hz.mp3” - >
-    <！ -     title =“远程：Nero SmartTrax  - 测试1”> </ md-wavesurur-source> - >
-    <！ - <md-wavesurur-source - >
-    <！ -     src =“http://download.wavetlan.com/SVV/Media/HTTP/MP3/Nero_SmartTrax/NeroSmartTrax_test2_MPEG1_Mono_CBR_64kbps_44100Hz.mp3” - >
-    <！ -     title =“远程：Nero SmartTrax  - 测试2”> </ md-wavesurur-source> - >
-
-    <！ -长列表，使用以前加载的文件，需要测试容器。- >
-    < md-waveurfer-source  ng-repeat = “ item in longList ”  src = “ {{item.url}} ”
-                          title = “ {{item.title}} ” > </ md-wavesur-source >
-
-
-  </ md-wavesur音频 >
-</ body >
-</ html >
+  </body>
+</html>

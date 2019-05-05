@@ -30,9 +30,13 @@
       var canvasHeight = canvas.height/2;
       context.fillStyle = "#f55";      
       for (var j=0;j<demoJson.length;j++) {  
+        // 1
         context.fillRect(2 * j, canvasHeight - (demoJson[j] * canvasHeight), 1.2, demoJson[j] * canvasHeight);
         // context.fillRect(2 * j, ( 3 * canvasHeight - (demoJson[j] * canvasHeight)) / 2 , 1.2, 1/2 * demoJson[j] * canvasHeight);
         context.fillRect(2 * j, canvasHeight + 1, 1.2, 1/2 * demoJson[j] * canvasHeight);
+        // 2
+        // context.fillRect(3 * j, canvasHeight - (demoJson[j] * canvasHeight), 2.2, demoJson[j] * canvasHeight);
+        // context.fillRect(3 * j, canvasHeight + 1, 2.2, 1/2 * demoJson[j] * canvasHeight);
 
       }
     })()  
