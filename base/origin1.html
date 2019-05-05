@@ -1,138 +1,140 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head></head>
+
 <body>
   <canvas width="900" height="400" id="canvas"></canvas>
-<style>
-  canvas{
-    width: 900px;
-    height: 400px;
-    background: white;
-  }
-</style>
-<!-- <script src="https://cdn.bootcss.com/jquery/1.10.2/jquery.min.js"></script> -->
-<script>
-// create environment -- audio context
-// define variables
-window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
+  <style>
+    canvas {
+      width: 900px;
+      height: 400px;
+      background: white;
+    }
+  </style>
+  <!-- <script src="https://cdn.bootcss.com/jquery/1.10.2/jquery.min.js"></script> -->
+  <script>
+    // create environment -- audio context
+    // define variables
+    window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
 
-var AudioContext = window.AudioContext || window.webkitAudioContext;
-var audioCtx;
-var source;
-try {
-    audioCtx = new AudioContext();
-    console.log('support');
-            console.log(audioCtx)
-    
-} catch (e) {
-    alert('Your browser does not support AudioContext!');
-    console.log(e);
-}
+    var AudioContext = window.AudioContext || window.webkitAudioContext;
+    var audioCtx;
+    var source;
+    try {
+      audioCtx = new AudioContext();
+      console.log('support');
+      console.log(audioCtx)
 
-// use XHR to load an audio track, and
-// decodeAudioData to decode it and stick it in a buffer.
-// Then we put the buffer into the source
+    } catch (e) {
+      alert('Your browser does not support AudioContext!');
+      console.log(e);
+    }
 
-var getData = function() {
-    // create audio node to play the audio in the buffer
-    source = audioCtx.createBufferSource();
-            console.log(source)
+    // use XHR to load an audio track, and
+    // decodeAudioData to decode it and stick it in a buffer.
+    // Then we put the buffer into the source
 
-    // 请求
-    var request = new XMLHttpRequest();
-    
-    //初始化 HTTP 请求参数, 配置请求类型，文件路径等
-    request.open('GET', '../mp3/i1.mp3', true);
-
-    // 配置数据返回类型,从服务器取回二进制数据
-    request.responseType = 'arraybuffer';
-
-    // 获取完成，对音频进一步操作，解码
-    request.onload = function() {
-      var audioData = request.response;
-      audioCtx.decodeAudioData(audioData, function(buffer) {
-        console.log(audioData);
-
-      source.buffer = buffer;
-
-      source.connect(audioCtx.destination);
-      source.loop = true;
-      console.info(source,source.frequencyBinCount);
-
-
-
-
-      // var atx = audioCtx;
-      //创建分析器
-      var analyser = audioCtx.createAnalyser();
+    var getData = function () {
+      // create audio node to play the audio in the buffer
       source = audioCtx.createBufferSource();
-      analyser.minDecibels = -90;
-      analyser.maxDecibels = -10;
-      analyser.fftSize = 256;
+      console.log(source)
 
-      console.info(source,analyser)
-      //将source与分析器链接
-      source.connect(analyser);
-      //将分析器与destination链接，这样才能形成到达扬声器的通路
-      analyser.connect(audioCtx.destination);
+      // 请求
+      var request = new XMLHttpRequest();
 
-      console.info(source,audioCtx.destination)
+      //初始化 HTTP 请求参数, 配置请求类型，文件路径等
+      request.open('GET', '../mp3/i1.mp3', true);
 
+      // 配置数据返回类型,从服务器取回二进制数据
+      request.responseType = 'arraybuffer';
 
-      //开始绘制频谱图
-      var canvas = document.getElementById('canvas'),
-          cwidth = canvas.width,
-          cheight = canvas.height ;
-      var ctx = canvas.getContext('2d');
-      //定义一个渐变样式用于画图
-      var gradient = ctx.createLinearGradient(0, 0, 0, 300);
-      gradient.addColorStop(1, '#0f0');
-      gradient.addColorStop(0.5, '#ff0');
-      gradient.addColorStop(0, '#f00');
-      ctx.fillStyle = gradient;
-      //绘制频谱图
-      function drawSpectrum() {
-        var array = new Uint8Array(analyser.frequencyBinCount);
+      // 获取完成，对音频进一步操作，解码
+      request.onload = function () {
+        var audioData = request.response;
+        audioCtx.decodeAudioData(audioData, function (buffer) {
+          console.log(audioData);
 
-        analyser.getByteFrequencyData(array);
+          source.buffer = buffer;
 
-        // console.log(analyser);
-
-        //清理画布
-        ctx.clearRect(0, 0, cwidth, cheight);
-        //只绘制出当前宽度内的线
-        /*
-        *从频率分布数据中可以看到数组中大于800的数据都是0 
-        */
-        for (var i = 0; i < cwidth; i++) {
-            var value = array[i];
-            // ctx.fillRect(i, cheight - value, 1, cheight);
-            console.log(Math.random());
-            ctx.fillRect(i, 128 * Math.random(), 1, cheight);
-        // console.info(array[i],cwidth-value)
-
-        }
-        window.requestAnimationFrame(drawSpectrum);
-      }
-
-      console.log(drawSpectrum);
-      window.requestAnimationFrame(drawSpectrum);
-      console.log(drawSpectrum);
+          source.connect(audioCtx.destination);
+          source.loop = true;
+          console.info(source, source.frequencyBinCount);
 
 
-      },
-      function(e) { console.log("Error with decoding audio data" + e.err); });
+
+
+          // var atx = audioCtx;
+          //创建分析器
+          var analyser = audioCtx.createAnalyser();
+          source = audioCtx.createBufferSource();
+          analyser.minDecibels = -90;
+          analyser.maxDecibels = -10;
+          analyser.fftSize = 256;
+
+          console.info(source, analyser)
+          //将source与分析器链接
+          source.connect(analyser);
+          //将分析器与destination链接，这样才能形成到达扬声器的通路
+          analyser.connect(audioCtx.destination);
+
+          console.info(source, audioCtx.destination)
+
+
+          //开始绘制频谱图
+          var canvas = document.getElementById('canvas'),
+            cwidth = canvas.width,
+            cheight = canvas.height;
+          var ctx = canvas.getContext('2d');
+          //定义一个渐变样式用于画图
+          var gradient = ctx.createLinearGradient(0, 0, 0, 300);
+          gradient.addColorStop(1, '#0f0');
+          gradient.addColorStop(0.5, '#ff0');
+          gradient.addColorStop(0, '#f00');
+          ctx.fillStyle = gradient;
+          //绘制频谱图
+          function drawSpectrum() {
+            var array = new Uint8Array(analyser.frequencyBinCount);
+
+            analyser.getByteFrequencyData(array);
+
+            // console.log(analyser);
+
+            //清理画布
+            ctx.clearRect(0, 0, cwidth, cheight);
+            //只绘制出当前宽度内的线
+            /*
+            *从频率分布数据中可以看到数组中大于800的数据都是0 
+            */
+            for (var i = 0; i < cwidth; i++) {
+              var value = array[i];
+              // ctx.fillRect(i, cheight - value, 1, cheight);
+              console.log(Math.random());
+              ctx.fillRect(i, 128 * Math.random(), 1, cheight);
+              // console.info(array[i],cwidth-value)
+
+            }
+            window.requestAnimationFrame(drawSpectrum);
+          }
+
+          console.log(drawSpectrum);
+          window.requestAnimationFrame(drawSpectrum);
+          console.log(drawSpectrum);
+
+
+        },
+          function (e) { console.log("Error with decoding audio data" + e.err); });
+      };
+
+      // 发送一个 HTTP 请求
+      request.send();
+
     };
 
-    // 发送一个 HTTP 请求
-    request.send();
+    // play audio
+    getData();
+    source.start(0);
 
-};
-
-// play audio
-getData();
-source.start(0);
-
-</script>
+  </script>
 
 </body>

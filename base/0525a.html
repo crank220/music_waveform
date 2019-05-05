@@ -1,55 +1,60 @@
 <!DOCTYPE html>
-  <html lang="en">
-  <head></head>
-  <body>
-    <div id="wrapper">
-  <div id="fileWrapper" class="file_wrapper">
-  <div id="info">
-    HTML5 Audio API showcase | An Audio Viusalizer
-  </div>
-  <label for="uploadedFile">Drag&drop or select a file to play:</label>
-  <input type="file" id="uploadedFile"></input>
-</div>
-<div id="visualizer_wrapper">
-  <canvas id='canvas' width="800" height="350"></canvas>
-</div>
-</div>
-<style>
-  #fileWrapper {
-   transition: all 0.5s ease;
-  }
-  #fileWrapper:hover {
-   opacity: 1!important;
-  }
-  #visualizer_wrapper {
-   text-align: center;
-  }
-</style>
-<script>
-  var analyser = audioContext.createAnalyser();
-  var canvas = document.getElementById('canvas'),
-  cwidth = canvas.width,
-  cheight = canvas.height - 2,
-  meterWidth = 10, //能量条的宽度
-  gap = 2, //能量条间的间距
-  meterNum = 800 / (10 + 2), //计算当前画布上能画多少条
-  ctx = canvas.getContext('2d'),
-  array = new Uint8Array(analyser.frequencyBinCount);
-  analyser.getByteFrequencyData(array);
-  var step = Math.round(array.length / meterNum);//计算从analyser中的采样步长
-  ctx.clearRect(0, 0, cwidth, cheight); //清理画布准备画画
-  //定义一个渐变样式用于画图
-  gradient = ctx.createLinearGradient(0, 0, 0, 300);
-  gradient.addColorStop(1, '#0f0');
-  gradient.addColorStop(0.5, '#ff0');
-  gradient.addColorStop(0, '#f00');
-  ctx.fillStyle = gradient;
-  //对信源数组进行抽样遍历，画出每个频谱条
-  for (var i = 0; i < meterNum; i++) {
-    var value = array[i * step];
-    ctx.fillRect(i * 12 /*频谱条的宽度+条间间距*/ , cheight - value + capHeight, meterWidth, cheight);
-  }
-</script>
+<html lang="en">
 
-  </body>
-</html>  
+<head></head>
+
+<body>
+  <div id="wrapper">
+    <div id="fileWrapper" class="file_wrapper">
+      <div id="info">
+        HTML5 Audio API showcase | An Audio Viusalizer
+      </div>
+      <label for="uploadedFile">Drag&drop or select a file to play:</label>
+      <input type="file" id="uploadedFile"></input>
+    </div>
+    <div id="visualizer_wrapper">
+      <canvas id='canvas' width="800" height="350"></canvas>
+    </div>
+  </div>
+  <style>
+    #fileWrapper {
+      transition: all 0.5s ease;
+    }
+
+    #fileWrapper:hover {
+      opacity: 1 !important;
+    }
+
+    #visualizer_wrapper {
+      text-align: center;
+    }
+  </style>
+  <script>
+    var analyser = audioContext.createAnalyser();
+    var canvas = document.getElementById('canvas'),
+      cwidth = canvas.width,
+      cheight = canvas.height - 2,
+      meterWidth = 10, //能量条的宽度
+      gap = 2, //能量条间的间距
+      meterNum = 800 / (10 + 2), //计算当前画布上能画多少条
+      ctx = canvas.getContext('2d'),
+      array = new Uint8Array(analyser.frequencyBinCount);
+    analyser.getByteFrequencyData(array);
+    var step = Math.round(array.length / meterNum);//计算从analyser中的采样步长
+    ctx.clearRect(0, 0, cwidth, cheight); //清理画布准备画画
+    //定义一个渐变样式用于画图
+    gradient = ctx.createLinearGradient(0, 0, 0, 300);
+    gradient.addColorStop(1, '#0f0');
+    gradient.addColorStop(0.5, '#ff0');
+    gradient.addColorStop(0, '#f00');
+    ctx.fillStyle = gradient;
+    //对信源数组进行抽样遍历，画出每个频谱条
+    for (var i = 0; i < meterNum; i++) {
+      var value = array[i * step];
+      ctx.fillRect(i * 12 /*频谱条的宽度+条间间距*/, cheight - value + capHeight, meterWidth, cheight);
+    }
+  </script>
+
+</body>
+
+</html>

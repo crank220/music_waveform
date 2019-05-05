@@ -1,148 +1,155 @@
 <!DOCTYPE html>
-  <html lang="en">
-  <title>波形图-分析器频率</title>
-  <head></head>
-  <body>
-    <canvas width="640" height="40" id="canvas"></canvas>
-    <canvas width="640" height="80" id="canvasi"></canvas>
-    <style>
-    html,body{
+<html lang="en">
+<title>波形图-分析器频率</title>
+
+<head></head>
+
+<body>
+  <canvas width="640" height="40" id="canvas"></canvas>
+  <canvas width="640" height="80" id="canvasi"></canvas>
+  <style>
+    html,
+    body {
       height: 100%;
       margin: 0;
     }
-    body{
+
+    body {
       display: flex;
-      justify-content:center;
-      align-items:center;
+      justify-content: center;
+      align-items: center;
     }
-    canvas{
-    width: 640px;
-    height: 40px;
-    background: white;
+
+    canvas {
+      width: 640px;
+      height: 40px;
+      background: white;
     }
-    #canvasi{
+
+    #canvasi {
       display: none;
       height: 80px !important;
     }
-    </style>
-    <script>
-      window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
-      var AudioContext = window.AudioContext || window.webkitAudioContext;
-      var audioCtx;
-      var source;
-      var Animationst;
-      try {
-        audioCtx = new AudioContext();
-      } catch (e) {
-        alert('Your browser does not support AudioContext!');
-        console.log(e);
-      }
-      var getData = function() {
-        source = audioCtx.createBufferSource();
-        // 请求
-        var request = new XMLHttpRequest();
-        //初始化 HTTP 请求参数, 配置请求类型，文件路径等
-        request.open('GET', '../mp3/i1.mp3', true);
-        // request.open('GET', 'mp3/i7.mp3', true);
-       
-        // 配置数据返回类型,从服务器取回二进制数据
-        request.responseType = 'arraybuffer';
-        // 获取完成，对音频进一步操作，解码
-        request.onload = function() {
-          var audioData = request.response;
-          audioCtx.decodeAudioData(audioData, function(buffer) {
-            source.buffer = buffer;
-            // console.log(source.buffer.duration)
-            window.audioDuration = source.buffer.duration; //音乐总时长
-            source.connect(audioCtx.destination);
-          },
-        function(e) { console.log("Error with decoding audio data" + e.err); });
-        };
-        // 发送一个 HTTP 请求
-        request.send();
-        //创建分析器
-        var analyser = audioCtx.createAnalyser();
-        source = audioCtx.createBufferSource();
-        // analyser.minDecibels = -90;
-        // analyser.maxDecibels = -10;
-        // analyser.fftSize = 8192 16384;
-        // analyser.fftSize = 16384;  
-        // analyser.fftSize = 32;  
-        analyser.fftSize = 256;
-        // analyser.fftSize = 64;                      
-        // analyser.fftSize = 256;2048
-        console.info(source,analyser)
-        //将source与分析器链接
-        source.connect(analyser);
-        //将分析器与destination链接，这样才能形成到达扬声器的通路
-        analyser.connect(audioCtx.destination);
-        // console.log(AudioContext.decodeAudioData())
-        console.info(source,audioCtx.destination)
-        //开始绘制频谱图
-        var canvas = document.getElementById('canvas'),
+  </style>
+  <script>
+    window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
+    var AudioContext = window.AudioContext || window.webkitAudioContext;
+    var audioCtx;
+    var source;
+    var Animationst;
+    try {
+      audioCtx = new AudioContext();
+    } catch (e) {
+      alert('Your browser does not support AudioContext!');
+      console.log(e);
+    }
+    var getData = function () {
+      source = audioCtx.createBufferSource();
+      // 请求
+      var request = new XMLHttpRequest();
+      //初始化 HTTP 请求参数, 配置请求类型，文件路径等
+      request.open('GET', '../mp3/i1.mp3', true);
+      // request.open('GET', 'mp3/i7.mp3', true);
+
+      // 配置数据返回类型,从服务器取回二进制数据
+      request.responseType = 'arraybuffer';
+      // 获取完成，对音频进一步操作，解码
+      request.onload = function () {
+        var audioData = request.response;
+        audioCtx.decodeAudioData(audioData, function (buffer) {
+          source.buffer = buffer;
+          // console.log(source.buffer.duration)
+          window.audioDuration = source.buffer.duration; //音乐总时长
+          source.connect(audioCtx.destination);
+        },
+          function (e) { console.log("Error with decoding audio data" + e.err); });
+      };
+      // 发送一个 HTTP 请求
+      request.send();
+      //创建分析器
+      var analyser = audioCtx.createAnalyser();
+      source = audioCtx.createBufferSource();
+      // analyser.minDecibels = -90;
+      // analyser.maxDecibels = -10;
+      // analyser.fftSize = 8192 16384;
+      // analyser.fftSize = 16384;  
+      // analyser.fftSize = 32;  
+      analyser.fftSize = 256;
+      // analyser.fftSize = 64;                      
+      // analyser.fftSize = 256;2048
+      console.info(source, analyser)
+      //将source与分析器链接
+      source.connect(analyser);
+      //将分析器与destination链接，这样才能形成到达扬声器的通路
+      analyser.connect(audioCtx.destination);
+      // console.log(AudioContext.decodeAudioData())
+      console.info(source, audioCtx.destination)
+      //开始绘制频谱图
+      var canvas = document.getElementById('canvas'),
         cheight = canvas.height,
         meterNum = 210,
         step = 1,
         maxValue = 0,
         capYPositionArray = [];
-        var ctx = canvas.getContext('2d');
-        ctx.fillStyle = '#f55';
-        function drawSpectrum() {
-          var array = new Uint8Array(analyser.frequencyBinCount);
-          analyser.getByteFrequencyData(array);
+      var ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#f55';
+      function drawSpectrum() {
+        var array = new Uint8Array(analyser.frequencyBinCount);
+        analyser.getByteFrequencyData(array);
+        // console.info(window.audioDuration/meterNum*step,audioCtx.currentTime);
+        if (window.audioDuration / meterNum * step < audioCtx.currentTime) {
+          console.log(window.audioDuration);
+          step++;
+          console.log('第' + (step - 1) + '步');
           // console.info(window.audioDuration/meterNum*step,audioCtx.currentTime);
-          if (window.audioDuration / meterNum * step < audioCtx.currentTime) {
-            console.log(window.audioDuration);
-            step++;
-            console.log('第' + (step-1) + '步');
-            // console.info(window.audioDuration/meterNum*step,audioCtx.currentTime);
-            // console.log(array);
-            var value = 0;
-            for(var i in array){
-              value += array[i];
-              if (value > maxValue) {
-                maxValue = value;
-              }
+          // console.log(array);
+          var value = 0;
+          for (var i in array) {
+            value += array[i];
+            if (value > maxValue) {
+              maxValue = value;
             }
-            value = (value / array.length) / 255 * cheight;
-            ctx.fillRect(3 * step, cheight - value, 2, cheight);  
-            capYPositionArray.push((value / cheight).toFixed(3));
-            console.log(((maxValue / array.length) / 255).toFixed(3));
-            console.log(capYPositionArray);
           }
-          // 动画回调
-          Animationst = window.requestAnimationFrame(drawSpectrum);
-          if (audioCtx.currentTime > window.audioDuration) {
-            //  停止动画
-            cancelAnimationFrame(Animationst);
-            maxValue = Math.ceil((maxValue / array.length) / 25.5) / 10;
-            console.log(maxValue);
-
-            var canvasi = document.getElementById("canvasi"); 
-            // canvas.style.display = 'none';
-            canvasi.style.display = 'block';
-            var context = canvasi.getContext("2d"); 
-            canvasi.width = capYPositionArray.length * 3;
-            var canvasHeight = canvasi.height/2;
-            context.fillStyle = "#f55";      
-            // console.log(capYPositionArray.length);
-            for (var j=0;j<capYPositionArray.length;j++) {  
-              capYPositionArray[j] = (capYPositionArray[j] / maxValue).toFixed(3);
-              context.fillRect(3 * j, canvasHeight - (capYPositionArray[j] * canvasHeight), 2.2, capYPositionArray[j] * canvasHeight);
-              context.fillRect(3 * j, canvasHeight + 1, 2.2, 1/2 * capYPositionArray[j] * canvasHeight);
-            }
-            //  成功取得json 与 波形图
-            console.log(capYPositionArray);
-            // document.write(capYPositionArray);
-          }
+          value = (value / array.length) / 255 * cheight;
+          ctx.fillRect(3 * step, cheight - value, 2, cheight);
+          capYPositionArray.push((value / cheight).toFixed(3));
+          console.log(((maxValue / array.length) / 255).toFixed(3));
+          console.log(capYPositionArray);
         }
+        // 动画回调
         Animationst = window.requestAnimationFrame(drawSpectrum);
-      };
+        if (audioCtx.currentTime > window.audioDuration) {
+          //  停止动画
+          cancelAnimationFrame(Animationst);
+          maxValue = Math.ceil((maxValue / array.length) / 25.5) / 10;
+          console.log(maxValue);
 
-      getData();
-      source.start(0);
+          var canvasi = document.getElementById("canvasi");
+          // canvas.style.display = 'none';
+          canvasi.style.display = 'block';
+          var context = canvasi.getContext("2d");
+          canvasi.width = capYPositionArray.length * 3;
+          var canvasHeight = canvasi.height / 2;
+          context.fillStyle = "#f55";
+          // console.log(capYPositionArray.length);
+          for (var j = 0; j < capYPositionArray.length; j++) {
+            capYPositionArray[j] = (capYPositionArray[j] / maxValue).toFixed(3);
+            context.fillRect(3 * j, canvasHeight - (capYPositionArray[j] * canvasHeight), 2.2, capYPositionArray[j] * canvasHeight);
+            context.fillRect(3 * j, canvasHeight + 1, 2.2, 1 / 2 * capYPositionArray[j] * canvasHeight);
+          }
+          //  成功取得json 与 波形图
+          console.log(capYPositionArray);
+          // document.write(capYPositionArray);
+        }
+      }
+      Animationst = window.requestAnimationFrame(drawSpectrum);
+    };
+
+    getData();
+    source.start(0);
       // source.stop();
-    </script>
+  </script>
 
-  </body>
+</body>
+
 </html>
