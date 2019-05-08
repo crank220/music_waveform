@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<title>波形图</title>
+
+<head></head>
+
+<body>
+  <input type="file" id="file"></input>
+  <canvas width="800" height="800" id="canvas"></canvas>
+</body>
+<script>
+  window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
+  // function getAudioDuration(url) {
+  //   const audio = document.createElement('audio');
+  //   audio.src = url;
+  //   audio.addEventListener("canplay", function () {
+  // 		console.log(audio.duration);
+  //   });
+  // }
+
+  // const file = document.getElementById('file');
+  // file.addEventListener('change', (e) => {
+  //   const file = e.target.files[0];
+  //   console.log(file);
+  //   getAudioDuration(URL.createObjectURL(file));
+  // })
+
+  // function getAudioDurationByAudioApi(file) {
+  //     const fileReader = new FileReader();
+  //     const audioContext = new AudioContext();
+  //     fileReader.readAsArrayBuffer(file);
+  //     fileReader.onload = () => {
+  //         audioContext.decodeAudioData(fileReader.result, (result) => {
+  //             console.log(result);
+  //         });
+  //     }
+  // }
+
+  // const file = document.getElementById('file');
+  // file.addEventListener('change', (e) => {
+  //     const file = e.target.files[0];
+  //     console.log(file.size);
+  //     getAudioDurationByAudioApi(file);
+  // })
+
+
+  const file = document.getElementById('file');
+  file.addEventListener('change', (e) => {
+    playAudio(e.target.files[0]);
+  });
+
+  function playAudio(file) {
+    const fileReader = new FileReader();
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    fileReader.readAsArrayBuffer(file);
+    fileReader.onload = () => {
+      audioContext.decodeAudioData(fileReader.result, (result) => {
+        //创建播放源
+        const source = audioContext.createBufferSource();
+        source.buffer = result;
+        //开始播放
+        source.start();
+
+        var analyser = audioContext.createAnalyser();
+
+        //连接：source → analyser → destination输出终端
+        source.connect(analyser);
+        analyser.connect(audioContext.destination);
+
+        var bufferLength = analyser.frequencyBinCount;
+        var dataArray = new Uint8Array(bufferLength);
+
+        analyser.getByteTimeDomainData(dataArray);
+
+        function draw() {
+          var wrap = document.getElementById("canvas");
+          var cxt = wrap.getContext("2d");
+          analyser.getByteFrequencyData(dataArray);//获取频域数据
+          cxt.clearRect(0, 0, wrap.width, wrap.height);
+          //画线条
+          for (var i = 0; i < 360; i++) {
+            var value = dataArray[i] / 8;//<===获取数据
+            cxt.beginPath();
+            cxt.lineWidth = 2;
+            cxt.moveTo(300, 300);
+            //R * cos (PI/180*一次旋转的角度数) ,-R * sin (PI/180*一次旋转的角度数)
+            cxt.lineTo(Math.cos((i * 1) / 180 * Math.PI) * (200 + value) + 300, (- Math.sin((i * 1) / 180 * Math.PI) * (200 + value) + 300));
+            cxt.stroke();
+          }
+          //画一个小圆，将线条覆盖
+          cxt.beginPath();
+          cxt.lineWidth = 1;
+          cxt.arc(300, 300, 200, 0, 2 * Math.PI, false);
+          cxt.fillStyle = "#fff";
+          cxt.stroke();
+          cxt.fill();
+          requestAnimationFrame(draw);
+        }
+
+        draw();
+      });
+    }
+  };
+</script>
+
+</html>
